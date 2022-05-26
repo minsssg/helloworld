@@ -7,6 +7,20 @@ public class User {
 	private String name;
 	private String gender;
 	private String phoneNumber;
+	
+	public User(
+		String id,
+		String password,
+		String name,
+		String gender,
+		String phoneNumber) {
+		
+		this.id = id;
+		this.password = password;
+		this.name = name;
+		this.gender = gender;
+		this.phoneNumber = phoneNumber;
+	}				
 
 	public String getId() {
 		return id;
@@ -38,5 +52,10 @@ public class User {
 	public void setGender(String gender) {
 		this.gender = gender;
 	}
-	
+
+	@Override
+	public String toString() {
+		return "User [id=" + id + ", password=" + password + ", name=" + name + ", gender=" + gender + ", phoneNumber="
+				+ phoneNumber + "]";
+	}
 }
