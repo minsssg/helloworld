@@ -1,6 +1,5 @@
-package helloworld.dao;
+package com.helloworld.dao;
 
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -10,7 +9,8 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-import helloworld.model.User;
+import com.helloworld.model.User;
+
 
 public class UserDAO {
 

@@ -1,4 +1,4 @@
-package helloworld.model;
+package com.helloworld.model;
 
 public class User {
 

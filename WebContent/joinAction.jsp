@@ -1,16 +1,9 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-<%@ page import="helloworld.model.User" %>
-<%@ page import="helloworld.dao.UserDAO" %>
+<%@ page import="com.helloworld.model.User" %>
+<%@ page import="com.helloworld.dao.UserDAO" %>
 <%@ page import="java.io.File" %>
 <%@ page import="java.io.PrintWriter" %>
-<% request.setCharacterEncoding("UTF-8"); %>
-<jsp:useBean id = "user" class="helloworld.model.User" scope="page"/>
-<jsp:setProperty name="user" property="id"/>
-<jsp:setProperty name="user" property="password"/>
-<jsp:setProperty name="user" property="name"/>
-<jsp:setProperty name="user" property="gender"/>
-<jsp:setProperty name="user" property="phoneNumber"/>
 <!DOCTYPE html>
 <html>
 <head>
@@ -19,10 +12,26 @@
 </head>
 <body>
 	<%
+		request.setCharacterEncoding("UTF-8");
+		User user = (User) request.getAttribute("user");
+		System.out.println("User = " + user);
+		if (user == null) {
+			user = new User(
+						request.getParameter("id"),
+						request.getParameter("password"),
+						request.getParameter("name"),
+						request.getParameter("gender"),
+						request.getParameter("phoneNumber")
+					);
+			
+			request.setAttribute("user", user);
+		}
+		System.out.println(user);
 		String userID = null;
 		if (session.getAttribute("id") != null){
 			userID = (String) session.getAttribute("id");
 		}
+		
 		if (userID != null)	{
 			PrintWriter script = response.getWriter();
 			script.println("<script>");
@@ -43,6 +52,7 @@
 			int result = userDAO.join(user);
 			String directory = application.getRealPath("/images/") + user.getId();
 			// System.out.println(directory);
+			System.out.println("result = " + result);
 			boolean check;
 			
 			if (result == -1){
