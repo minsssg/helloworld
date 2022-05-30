@@ -14,7 +14,7 @@ import com.helloworld.model.User;
 
 public class UserDAO {
 
-	private String url = "jdbc:mysql://localhost:3306/BBS?verifyServerCertificate=false&useSSL=false&serverTimezone=Asia/Seoul";
+	private String url = "jdbc:mysql://localhost:3306/BBS?serverTimezone=Asia/Seoul";
 	private String user = "root";
 	private String password = "root";
 	
@@ -71,6 +71,49 @@ public class UserDAO {
 		return user;
 	}
 	
+	public int login(String id, String password) {
+		
+		User user = findById(id);
+		
+		if (user == null) return -1; // 아이디가 존재하지 않습니다.
+		
+		String query = "SELECT userID, "
+				+ "userPassword, "
+				+ "userName, "
+				+ "userGender, "
+				+ "userPhoneNumber "
+				+ "FROM user "
+				+ "WHERE userID = ? "
+				+ "AND userPassword = ?";
+		
+		try (Connection con = getConnection();
+			 PreparedStatement pstmt = con.prepareStatement(query);) {
+			
+			pstmt.setString(1, id);
+			pstmt.setString(2, password);
+			
+			ResultSet rs = pstmt.executeQuery();
+			user = null;
+			
+			if (rs.next()) {
+				user = new User(rs.getNString(1)
+						, rs.getNString(2)
+						, rs.getNString(3)
+						, rs.getNString(4)
+						, rs.getNString(5));
+			}
+			
+			if (user == null) return 0; // 비밀번호가 올지 않습니다.
+			
+			return 1; // 로그인 성공.
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return -2;		
+	}
+	
 	public int join(User newUser) {
 		
 		User alreadyExistUser = findById(newUser.getId());
@@ -83,13 +126,25 @@ public class UserDAO {
 		
 		try (Connection con = getConnection();
 			 PreparedStatement pstmt = con.prepareStatement(query);) {
+			
+			// start transaction block
+			con.setAutoCommit(false); // default true;
+			
 			pstmt.setNString(1, newUser.getId());
 			pstmt.setNString(2, newUser.getPassword());
 			pstmt.setNString(3, newUser.getName());
 			pstmt.setNString(4, newUser.getGender());
 			pstmt.setNString(5, newUser.getPhoneNumber());
 			
-			return pstmt.executeUpdate();
+			int result = pstmt.executeUpdate();
+			
+			// end transaction block, commit changes
+			con.commit();
+			
+			// good practice to set it back to default true
+			con.setAutoCommit(true);
+			
+			return result;
 		
 		} catch (SQLException e) {
 			e.printStackTrace();
