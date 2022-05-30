@@ -14,7 +14,6 @@
 	<%
 		request.setCharacterEncoding("UTF-8");
 		User user = (User) request.getAttribute("user");
-		System.out.println("User = " + user);
 		if (user == null) {
 			user = new User(
 						request.getParameter("id"),
@@ -59,6 +58,13 @@
 				PrintWriter script = response.getWriter();
 				script.println("<script>");
 				script.println("alert('이미 존재하는 아이디 입니다.')");
+				script.println("history.back()");
+				script.println("</script>");
+			}
+			else if (result == -2) {
+				PrintWriter script = response.getWriter();
+				script.println("<script>");
+				script.println("alert('데이터베이스 에러 발생')");
 				script.println("history.back()");
 				script.println("</script>");
 			}
