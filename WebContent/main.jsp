@@ -2,14 +2,17 @@
 	pageEncoding="UTF-8"%>
 <%@ page import="java.io.PrintWriter"%>
 <%@ page import="java.io.File" %>
+<%@ page import="java.util.List" %>
 <%@ page import="java.util.ArrayList" %>
 <%@ page import="com.helloworld.model.User" %>
 <%@ page import="com.helloworld.dao.UserDAO" %>
+<%@ page import="com.helloworld.model.Bbs" %>
+<%@ page import="com.helloworld.dao.BbsDAO" %>
 <!DOCTYPE html>
 <html>
 <head>
 <meta http-equiv="Content-Type" content="Text/html; charset=UTF-8">
-<meta name="viewport" content="width=device-width" , initial-scale="1">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="css/bootstrap.css">
 <link rel="stylesheet" href="css/custom.css">
 <link rel="stylesheet" href="css/main_ui.css">
@@ -78,7 +81,7 @@
 					aria-expanded="false">접속하기<span class="caret"></span></a>
 					<ul class="dropdown-menu">
 						<li><a href="logoutAction.jsp">로그아웃</a></li>
-						<li><a href="profile.jsp?userID=<%=userID%>">내 정보</a></li>
+						<li><a href="profile.jsp?id=<%=userID%>">내 정보</a></li>
 					</ul></li>
 			</ul>
 			<%
@@ -93,11 +96,11 @@
 			<div class="container" style="background-color: #F7F9FF">
 				<%
 					BbsDAO bbsDAO = new BbsDAO();
-					ArrayList<Bbs> list = bbsDAO.getList(pageNumber);
+					List<Bbs> list = new ArrayList<>();
 					
 					String userName = null;
-					userName = user.getUserName();
-					int bbscount = 0;
+					userName = request.getParameter("userName");
+					long bbscount = 0L;
 					if(userName != null) {
 						bbscount = bbsDAO.bbsCount(userName);
 					} else {
@@ -108,10 +111,10 @@
 				<%
 					
 					if(userName != null) {
-						System.out.println("userName: "+userName);
-						list = bbsDAO.searchList(userName, pageNumber);
-				
-					} 
+						list = bbsDAO.getBbsPage(userName, pageNumber);
+					} else {
+						list = bbsDAO.getBbsPage(pageNumber);						
+					}
 					if (bbscount == 0) {
 				%>
 					<h3>'<%=userName %>'에 대한 검색 내용이 없습니다.</h3>	
@@ -121,13 +124,13 @@
 				<div class="row">
 				<% for(int i = 0; i < list.size(); i++) { 
 					    String date = list.get(i).getBbsDate();
-					    String dir_path = application.getRealPath("/images/" + list.get(i).getUserID() + "/") + list.get(i).getBbsDate();
-					    //System.out.println(dir_path);
+					    String dir_path = application.getRealPath("/images/" + list.get(i).getUserId() + "/") + list.get(i).getBbsDate();
+					    System.out.println(dir_path);
 					    File dir = new File(dir_path);
-					    //System.out.println("dir: " + dir.isDirectory());
+					    System.out.println("dir: " + dir.isDirectory());
 					    String files[] = dir.list();
-					    //System.out.println(files.length);
-					    //System.out.println(dir.getPath());
+					    System.out.println(files.length);
+					    System.out.println(dir.getPath());
 				%>
 					<div class="col-md-4">
 						<div class="thumbnail" style="background-color:#DEE1E8; border-bottom-right-radius:3em">
@@ -149,7 +152,7 @@
 		                           for (int j = 0; j < files.length; j++) {
 		                        %>
 		                        <div id="item<%=i %><%=j%>" class="item">
-		                           <img src="images/<%=list.get(i).getUserID() + "/" + date + "/" + files[j]%>" style="width: 300px; height: 200px">
+		                           <img src="images/<%=list.get(i).getUserId() + "/" + date + "/" + files[j]%>" style="width: 300px; height: 200px">
 		                        </div>
 		                        <%
 		                           }
@@ -172,8 +175,8 @@
 						%>	
 							<div class="caption">
 								<img src="images/user.png" class="img-circle" width="10%" height="10%" style="float:left; margin-right: 10px;">
-								<p class="text-info" style="margin-top: 10px"><a href="view.jsp?bbsID=<%=list.get(i).getBbsID() %>"><%=list.get(i).getUserName() %></a></p>	
-								<p><%=list.get(i).getBbsTitle() %></p>
+								<p class="text-info" style="margin-top: 10px"><a href="view.jsp?bbsID=<%=list.get(i).getId() %>"><%=list.get(i).getUserName() %></a></p>	
+								<p><%=list.get(i).getTitle() %></p>
 							</div>
 						</div>
 					</div>
@@ -183,7 +186,7 @@
 				</div>
 			</div>
 			<%
-				int pageNum;	
+				long pageNum;	
 				System.out.println("BbsCount: "+ bbscount);
 				if (bbscount == -1) {
 					PrintWriter script = response.getWriter();
@@ -197,7 +200,6 @@
 				} else {
 					pageNum = (bbscount/6) + 1;
 				}
-				System.out.println("PageNUM: "+pageNum);
 			%>
 			<div class="page" align="center">
 				<ul class="pagination">
