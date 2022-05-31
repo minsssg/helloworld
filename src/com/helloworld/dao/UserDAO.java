@@ -1,48 +1,19 @@
 package com.helloworld.dao;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.helloworld.model.User;
 
 
-public class UserDAO {
-
-	private String url = "jdbc:mysql://localhost:3306/BBS?serverTimezone=Asia/Seoul";
-	private String user = "root";
-	private String password = "root";
-	
-	public UserDAO() {
-		// Driver Class Loading
-		try {
-			Class.forName("com.mysql.cj.jdbc.Driver");
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		}
-	}
-	
-	public Connection getConnection() throws SQLException {
-		return DriverManager.getConnection(url, user, password);
-	}
-	
-	public void close(Statement stmt, Connection con) throws SQLException {
-		if (stmt != null) {
-			stmt.close();
-		}
-		
-		if (con != null) {
-			con.close();
-		}
-	}
+public class UserDAO extends DAO {
 	
 	public User findById(String id) {
-		String SQL = "SELECT	userID"
+		String query = "SELECT	userID"
 				+ ",	userPassword"
 				+ ",	userName"
 				+ ",	userGender"
@@ -52,10 +23,11 @@ public class UserDAO {
 		User user = null;
 		
 		try (Connection con = getConnection();
-			PreparedStatement pstmt = con.prepareStatement(SQL)) {
+			PreparedStatement pstmt = con.prepareStatement(query)) {
 			pstmt.setNString(1, id);
 			ResultSet rs = pstmt.executeQuery();
 			if (rs.next()) {
+				// Fix. 추후 빌더 패턴으로 수정할것.
 				user = new User(
 							rs.getNString(1),
 							rs.getNString(2),
