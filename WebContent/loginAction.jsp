@@ -17,8 +17,8 @@
 		String password = request.getParameter("password");
 	
 		String userID = null;
-		if (session.getAttribute("id") != null){
-			userID = (String) session.getAttribute("id");
+		if (session.getAttribute("userId") != null){
+			userID = (String) session.getAttribute("userId");
 		}
 		if (userID != null)	{
 			PrintWriter script = response.getWriter();
@@ -31,7 +31,9 @@
 		int result = userDAO.login(id, password);
 		
 		if (result == 1){	// 로그인 성공!
-			session.setAttribute("userID", id);//session 부여!
+			User user = userDAO.findById(id);
+			session.setAttribute("userId", id);//session 부여!
+			session.setAttribute("user", user);
 			PrintWriter script = response.getWriter();
 			script.println("<script>");
 			script.println("location.href = 'main.jsp'");
