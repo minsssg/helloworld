@@ -39,8 +39,6 @@
 		UserDAO userDAO = new UserDAO();
 		
 		User user = userDAO.findById(request.getParameter("id"));
-		
-		System.out.println(user);
 	%>
 	<nav class="navbar navbar-default" style="background-color: #E4EFFF">
 		<div class="navbar-header">
@@ -223,7 +221,7 @@
 			<%
 				BbsDAO bbsDAO = new BbsDAO();
 				List<Bbs> list = bbsDAO.getBbsListByUserId(user.getId());
-				for(int i = 0; i < list.size(); i++) {
+				for (int i = 0; i < list.size(); i++) {
 			%>
 			var geocoder = new google.maps.Geocoder();
 			var address;
@@ -280,7 +278,6 @@
 					}
 		
 					var address = place.name;
-					console.log(address);
 					<% if(userID.equals(user.getId())) { %>
 					addMarker(place.geometry.location, address);
 					<% } %>
@@ -318,6 +315,7 @@
 					infoWindow = new google.maps.InfoWindow({content: '<form action="bbswrite.jsp" method="get" style="float: right">'
 																		+'<input type="hidden" name="lat" value="'+location.lat()+'">'
 																		+'<input type="hidden" name="lng" value="'+location.lng()+'">'
+																		+'<input type="hidden" name="address" value="' + address + '">'
 																		+'<input type="submit" class="btn btn-info" value="글쓰기"></form>'+'Latitude: ' + location.lat().toFixed(2) + '<br>Longitude: ' + location.lng().toFixed(2) + '<br>address: '+address	});
 					infoWindow.close();
 					infoWindow.open(map, marker);
@@ -362,7 +360,7 @@
 		//google.maps.event.addDomListener(window, 'load', initialize);
 		
 	</script>
-	<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA1yOpeAFz4wMwMl37CLylBu9P4FTrZKxg&libraries=places&callback=initialize"></script>
+	<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyArZ_tiFntWxWv9FvGup4mbBcMnZ2NHhzE&libraries=places&callback=initialize"></script>
 	<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
 	<script src="js/bootstrap.js"></script>
 </body>
