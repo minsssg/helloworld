@@ -1,5 +1,11 @@
 package com.helloworld.test.dao;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -8,6 +14,7 @@ import org.junit.jupiter.api.Test;
 
 import com.helloworld.dao.BbsDAO;
 import com.helloworld.model.Bbs;
+import com.helloworld.util.CurrentLocalDateTime;
 
 public class BbsDAOTest {
 
@@ -78,5 +85,36 @@ public class BbsDAOTest {
 		for (Bbs bbs : bbsList) {
 			System.out.println("silverlight_me = " + bbs);
 		}
+	}
+	
+	@Test
+	@DisplayName("Jdbc auto-commit mode 확인")
+	void testAutoCommitMode() {
+		assertTrue(bbsDAO.getAutoCommitMode());
+	}
+	
+	@Test
+	@DisplayName("Jdbc auto-commit mode off 확인")
+	void testOffAutoCommitMode() {
+		assertTrue(bbsDAO.getAutoCommitMode());
+	}
+	
+	@Test
+	@DisplayName("Bbs Create Test")
+	void testCreateBbs() {
+		
+		Bbs bbs = new Bbs();
+		
+		bbs.setTitle("테스트 제목 commit 하지 않을 떄");
+		bbs.setUserId("sliverlight_me");
+		bbs.setUserName("김은희");
+		bbs.setBbsDate(CurrentLocalDateTime.now());
+		bbs.setContent("테스트 내용입니다. commit 하지 않을 떄.");
+		bbs.setLatitude(0);
+		bbs.setLongitude(0);
+		
+		int result = bbsDAO.write(bbs);
+		System.out.println("create result = " + result);
+		assertEquals(result, 1);
 	}
 }

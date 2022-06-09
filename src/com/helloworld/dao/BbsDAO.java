@@ -279,4 +279,56 @@ public class BbsDAO extends DAO {
 		
 		return 0L;
 	}
+	
+	/**
+	 *  BbsDAO write 메서드
+	 */
+	public int write(Bbs bbs) {
+		String query = "INSERT INTO BBS(bbsTitle, userID, userName, bbsDate, bbsContent, latitude, longitude) VALUES (?, ?, ?, ?, ?, ?, ?)";
+		
+		try (Connection con = getConnection();
+			 PreparedStatement pstmt = con.prepareStatement(query)) {
+			
+			con.setAutoCommit(false); // off the auto-commit mode
+			
+			pstmt.setString(1, bbs.getTitle());
+			pstmt.setString(2, bbs.getUserId());
+			pstmt.setString(3, bbs.getUserName());
+			pstmt.setString(4, bbs.getBbsDate());
+			pstmt.setString(5, bbs.getContent());
+			pstmt.setDouble(6, bbs.getLatitude());
+			pstmt.setDouble(7, bbs.getLongitude());
+			
+			int result = pstmt.executeUpdate();
+			
+			con.commit(); // commit을 하지 않으면 업데이트가 안됨.
+			
+			return result;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	
+		return -1;
+	}
+	
+	public boolean getAutoCommitMode() {
+		try (Connection con = getConnection()) {
+			return con.getAutoCommit();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return false;
+	}
+	
+	public boolean getOffAutoCommitMode() {
+		try (Connection con = getConnection()) {
+			con.setAutoCommit(false);
+			return con.getAutoCommit();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return false;
+	}
 }
