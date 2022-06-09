@@ -2,6 +2,7 @@
 	pageEncoding="UTF-8"%>
 <%@ page import="java.io.PrintWriter"%>
 <%@ page import="java.io.File" %>
+<%@ page import="java.util.Arrays" %>
 <%@ page import="java.util.List" %>
 <%@ page import="java.util.ArrayList" %>
 <%@ page import="com.helloworld.model.User" %>
@@ -21,8 +22,8 @@
 <body>
 	<%
 		String userID = null;
-		if (session.getAttribute("userID") != null) {
-			userID = (String) session.getAttribute("userID");
+		if (session.getAttribute("userId") != null) {
+			userID = (String) session.getAttribute("userId");
 		}
 		if (userID == null) {
 			PrintWriter script = response.getWriter();
@@ -96,7 +97,7 @@
 			<div class="container" style="background-color: #F7F9FF">
 				<%
 					BbsDAO bbsDAO = new BbsDAO();
-					List<Bbs> list = new ArrayList<>();
+					List<Bbs> bbsList = new ArrayList<>();
 					
 					String userName = null;
 					userName = request.getParameter("userName");
@@ -111,9 +112,9 @@
 				<%
 					
 					if(userName != null) {
-						list = bbsDAO.getBbsPage(userName, pageNumber);
+						bbsList = bbsDAO.getBbsPage(userName, pageNumber);
 					} else {
-						list = bbsDAO.getBbsPage(pageNumber);						
+						bbsList = bbsDAO.getBbsPage(pageNumber);						
 					}
 					if (bbscount == 0) {
 				%>
@@ -122,19 +123,16 @@
 					}
 				%>
 				<div class="row">
-				<% for(int i = 0; i < list.size(); i++) { 
-					    String date = list.get(i).getBbsDate();
-					    String dir_path = application.getRealPath("/images/" + list.get(i).getUserId() + "/") + list.get(i).getBbsDate();
-					    System.out.println(dir_path);
+				<% for(int i = 0; i < bbsList.size(); i++) {
+						Bbs bbs = bbsList.get(i);
+					    String date = bbs.getBbsDate();
+					    String dir_path = application.getRealPath("/images/" + bbs.getUserId() + "/") + bbs.getBbsDate();
 					    File dir = new File(dir_path);
-					    System.out.println("dir: " + dir.isDirectory());
-					    String files[] = dir.list();
-					    System.out.println(files.length);
-					    System.out.println(dir.getPath());
+					    String[] files = dir.list();
 				%>
 					<div class="col-md-4">
 						<div class="thumbnail" style="background-color:#DEE1E8; border-bottom-right-radius:3em">
-						<% if(files.length > 0) { %>
+						<% if (files != null && files.length > 0) { %>
 		                  <div id="myCarousel<%=i %>" class="carousel slide" data-ride="carousel"
 		                     style="width: 100%; text-align: right; display: block; margin: 0 auto">
 		                     <ol class="carousel-indicators">
@@ -152,7 +150,7 @@
 		                           for (int j = 0; j < files.length; j++) {
 		                        %>
 		                        <div id="item<%=i %><%=j%>" class="item">
-		                           <img src="images/<%=list.get(i).getUserId() + "/" + date + "/" + files[j]%>" style="width: 300px; height: 200px">
+		                           <img src="images/<%=bbs.getUserId() + "/" + date + "/" + files[j]%>" style="width: 300px; height: 200px">
 		                        </div>
 		                        <%
 		                           }
@@ -175,8 +173,8 @@
 						%>	
 							<div class="caption">
 								<img src="images/user.png" class="img-circle" width="10%" height="10%" style="float:left; margin-right: 10px;">
-								<p class="text-info" style="margin-top: 10px"><a href="view.jsp?bbsID=<%=list.get(i).getId() %>"><%=list.get(i).getUserName() %></a></p>	
-								<p><%=list.get(i).getTitle() %></p>
+								<p class="text-info" style="margin-top: 10px"><a href="view.jsp?bbsID=<%=bbs.getId() %>"><%=bbs.getUserName() %></a></p>	
+								<p><%=bbs.getTitle() %></p>
 							</div>
 						</div>
 					</div>
@@ -187,7 +185,6 @@
 			</div>
 			<%
 				long pageNum;	
-				System.out.println("BbsCount: "+ bbscount);
 				if (bbscount == -1) {
 					PrintWriter script = response.getWriter();
 					script.println("<script>");
@@ -223,7 +220,7 @@
 	</div>
 	
 	<script>
-		<%for(int i = 0; i < list.size(); i++){ %> 
+		<%for(int i = 0; i < bbsList.size(); i++){ %> 
 			var li = document.getElementById("slide<%=i%>0");
 	    	var img = document.getElementById("item<%=i%>0");
 	    	if(li != null && img != null) {

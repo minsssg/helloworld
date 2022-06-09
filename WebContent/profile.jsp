@@ -24,8 +24,8 @@
 	<%
 		String userID = null;
 		
-		if (session.getAttribute("userID") != null) {
-			userID = (String) session.getAttribute("userID");
+		if (session.getAttribute("userId") != null) {
+			userID = (String) session.getAttribute("userId");
 		} 
 		
 		if (userID == null) {
@@ -95,18 +95,9 @@
 		<div class="jumbotron" style="background-color: #F7F9FF">
 			<div class="container" style="background-color: #F7F9FF">
 				<div id="side_left">
-					<div class="Search_BOX" id="srcb" >
-						<div>
-							<div id="Box_label" style="background-color: #B9C2FF">검색 창</div>		
-						</div>
-						<div id='srcb_container'>
-							<input id="Search_Box" class="controls" type="text" placeholder="Search Box">
-						</div>
-					</div>
-					
-					<div id="googleMap"
-						style="width: 100%; height: 100%; border-radius: 2em">
-					</div>
+					<form action="bbswrite.jsp" method="get">
+						<input type="submit" class="btn btn-info" value="글쓰기">
+					</form>
 				</div> 
 				<div id="side_rigth" style="background-color: #DEE1E8">
 					<div id="profile_box" style="border-bottom: 1.5px solid gray">
@@ -185,182 +176,6 @@
 			</div>
 		</div>
 	</div>
-	
-	<script>
-		var map;
-		var markers = [];
-		var position;
-		function initialize() {
-			var mapProp = {
-				center : {
-					lat : 37.250943,
-					lng : 127.028344
-				},
-				zoom : 5,
-				mapTypeId : google.maps.MapTypeId.ROADMAP,
-				panControl : true,
-				zoomControl : true,
-				mapTypeControl : true,
-				scaleControl : true,
-				streetViewContro : true,
-				overviewMapControl : true,
-				rotateControl : true,
-
-				mapTypeControlOptions : {
-					style : google.maps.MapTypeControlStyle.DROPDOWN_MENU
-				}
-			};
-
-			map = new google.maps.Map(document.getElementById("googleMap"),
-					mapProp);
-			// Create the search box
-			var srcb = document.getElementById('srcb');
-			var input = document.getElementById('Search_Box');
-			var searchBox = new google.maps.places.SearchBox(input);
-			map.controls[google.maps.ControlPosition.TOP_LEFT].push(srcb);
-			<%
-				BbsDAO bbsDAO = new BbsDAO();
-				List<Bbs> list = bbsDAO.getBbsListByUserId(user.getId());
-				for (int i = 0; i < list.size(); i++) {
-			%>
-			var geocoder = new google.maps.Geocoder();
-			var address;
-			geocoder.geocode({
-				'latLng': location
-			}, function(results, status){
-				if (status == google.maps.GeocoderStatus.OK) {
-					address = results[0].formatted_address;					
-				} else {
-					//alert("Geocoder Failed due to: " + status);
-				}
-			});
-				var location = new google.maps.LatLng('<%=list.get(i).getLatitude()%>', '<%=list.get(i).getLongitude()%>');
-				markers[markers.length] = new google.maps.Marker({
-					map: map,
-					position: location,
-					title: address,
-					icon: "images/pinball.png"
-				});
-				markers[<%=i%>].addListener('click', function(event) {
-					infoWindow = new google.maps.InfoWindow({content: '#글쓴이: <%=user.getName()%> <br>#제목: <%=list.get(i).getTitle() %> <br>#내용: <%=list.get(i).getContent()%><br>'
-						 									+ '<a href="view.jsp?bbsID=<%=list.get(i).getId()%>" class="btn btn-info">보기</a>'});
-					infoWindow.close();
-					infoWindow.open(map, markers[<%=i%>]);
-				});
-				
-			<%
-				}
-			%>
-			
-			<% if(userID.equals(user.getId())) { %>
-			map.addListener('click', function(event) {
-				addMarker(event.latLng);
-			});
-	
-			map.addListener('bounds_changed', function() {
-				searchBox.setBounds(map.getBounds());
-			});
-			<% } %>
-			
-			searchBox.addListener('places_changed', function(){
-				var places = searchBox.getPlaces();
-	
-				if(places.length == 0) {
-					return;
-				}
-				
-	
-				var bounds = new google.maps.LatLngBounds();
-				places.forEach(function(place){
-					if(!place.geometry) {
-						alert("Returned place contains no geometry");
-						return;
-					}
-		
-					var address = place.name;
-					<% if(userID.equals(user.getId())) { %>
-					addMarker(place.geometry.location, address);
-					<% } %>
-					if (place.geometry.viewport){
-						bounds.union(place.geometry.viewport);
-					} else {
-						bounds.extend(place.geometry.location);
-					}
-				});
-				map.fitBounds(bounds);
-			});
-		}
-	
-		function addMarker(location) {
-			var tmp;
-			var local;
-			var lat = 0;
-			var lng = 0;
-			var infowindow;
-			var marker = new google.maps.Marker({
-				position: location,
-				map: map,
-				animation: google.maps.Animation.DROP,
-				title: address
-			});
-			
-			var geocoder = new google.maps.Geocoder();
-			var address;
-			geocoder.geocode({
-				'latLng': location
-			}, function(results, status){
-				if (status == google.maps.GeocoderStatus.OK) {
-					address = results[0].formatted_address;
-					
-					infoWindow = new google.maps.InfoWindow({content: '<form action="bbswrite.jsp" method="get" style="float: right">'
-																		+'<input type="hidden" name="lat" value="'+location.lat()+'">'
-																		+'<input type="hidden" name="lng" value="'+location.lng()+'">'
-																		+'<input type="hidden" name="address" value="' + address + '">'
-																		+'<input type="submit" class="btn btn-info" value="글쓰기"></form>'+'Latitude: ' + location.lat().toFixed(2) + '<br>Longitude: ' + location.lng().toFixed(2) + '<br>address: '+address	});
-					infoWindow.close();
-					infoWindow.open(map, marker);
-										
-				} else {
-					alert("Geocoder Failed due to: " + status);
-				}
-			});
-	
-			var circleOptions = {
-				center: location,
-				clickable: false,
-				fillColor: "blue",
-				fillOpacity: 0.15,
-				map: map,
-				radius: 100,
-				strokeColor: "blue",
-				strokeOpacity: 0.3,
-				strokeWeight: 2
-			};
-			
-			var addCircle = new google.maps.Circle(circleOptions);	
-	
-			marker.addListener('click', function(){
-				/* 나라 위치 가져오기 구현해야함.*/
-				infoWindow.close();
-				infoWindow = new google.maps.InfoWindow({content: '<form action="bbswrite.jsp" method="get" style="float: right">'
-					+'<input type="hidden" name="lat" value="'+location.lat()+'">'
-					+'<input type="hidden" name="lng" value="'+location.lng()+'">'
-					+'<input type="submit" class="btn btn-info" value="글씨기"></form>'+'Latitude: ' + location.lat().toFixed(2) + '<br>Longitude: ' + location.lng().toFixed(2) + '<br>address: '+address	});
-				infoWindow.open(map, marker);
-			});
-			
-			marker.addListener('dblclick', function() {
-				marker.setMap(null);
-				addCircle.setMap(null);
-			});
-	
-			markers.push(marker);
-		}
-		
-		//google.maps.event.addDomListener(window, 'load', initialize);
-		
-	</script>
-	<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyArZ_tiFntWxWv9FvGup4mbBcMnZ2NHhzE&libraries=places&callback=initialize"></script>
 	<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
 	<script src="js/bootstrap.js"></script>
 </body>

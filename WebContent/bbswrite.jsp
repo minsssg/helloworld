@@ -3,11 +3,6 @@
     pageEncoding="UTF-8"%>
 <%@ page import="java.io.PrintWriter"  %> 
 <%@ page import="com.helloworld.model.User" %>
-<%
-//<jsp:useBean id="file" class="file.FileDTO" scope="page"/>
-//<jsp:setProperty name="file" property="lat"/>
-//<jsp:setProperty name="file" property="lng"/>
-%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -30,8 +25,8 @@
 		
 		System.out.println("bbswrite in user = " + user);
 		
-		if (session.getAttribute("userID") != null){
-			userID = (String)session.getAttribute("userID");
+		if (session.getAttribute("userId") != null){
+			userID = (String)session.getAttribute("userId");
 		} 
 		
 		if (userID == null){
@@ -218,9 +213,6 @@
 			<form action="uploadAction.jsp" method="post" enctype="multipart/form-data"> 
 				<table class="table table-striped" align="center" style="text-align: center; width: 50%; border: 1px solid #dddddd ; width:600px ;background-color: #F7F9FF">
 					<thead>
-						<tr>
-							<th colspan="2"	style="backgroud-color: #eeeeee; text-align: center;"><%=request.getParameter("address") %></th>
-						</tr>
 					</thead>
 					<tbody>
 						<tr>				
