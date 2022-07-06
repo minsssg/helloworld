@@ -1,0 +1,68 @@
+.input-group {
+	position: relative;
+	display: flex;
+	align-items: center;
+}
+
+.input-group input {
+	padding: 15px 3rem 15px 15px;
+	margin: 10px;
+	width: 100%;
+	background: #ffffff;
+	outline: none;
+	border: 1px solid #215164;
+	border-radius: 4px;
+	color: #000;
+	transition: width 0.9s, height 0.9s border-radius 0.9s;
+	font-size: 16px;
+}
+
+.input-group input::placeholder {
+	color: #346a80;
+}
+
+.input-group input:focus {
+	border: 2px solid #55b7dd;
+	box-shadow: 0px 0px 2px 2px #55b7dd34;
+}
+
+.pass-strength {
+	display: flex;
+	align-items: center;
+	margin-top: 3px;
+}
+
+.strength-label {
+	font-size: 12px;
+	margin-left: 10px;
+}
+
+.strength-percent {
+	flex: 1;
+	height: 5px;
+	border-radius: 10px;
+	display: block;
+	background: #eee;
+}
+
+.strength-percent span {
+	display: block;
+	height: 100%;
+	transition: all 0.4s;
+	border-radius: 10px;
+}
+
+.weak {
+	background: red;
+	width: 33%;
+}
+
+.average {
+	background: #ffd000;
+	width: 66%;
+}
+
+.strong {
+	background: green;
+	width: 100%;
+}

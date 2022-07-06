@@ -7,6 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="css/bootstrap.css">
 <link rel="stylesheet" href="css/custom.css">
+<link rel="stylesheet" href="css/style.css"/>
 <title>Hello World</title>
 </head>
 <body>
@@ -34,13 +35,17 @@
 					<h3>로그인 화면</h3>
 					<img src="images/user.png" class="user" alt="user" style="width: 50%">
 
-					<div class="form-group" style="padding-top: 50px">
-						<input type="text" class="form-control" placeholder="아이디"
+					<div class="input-group">
+						<input type="text" placeholder="Enter your ID"
 							name="id" maxlength="20"></input>
 					</div>
-					<div class="form-group">
-						<input type="password" class="form-control" placeholder="비밀번호"
+					<div class="input-group">
+						<input type="password" placeholder="Enter your password"
 							name="password" maxlength="20">
+					</div>
+					<div class="pass-strength">
+						<div class="strength-percent"><span></span></div>
+						<span class="strength-label">Strength</span>
 					</div>
 					<input type="submit" class="btn btn-primary form-control"
 						value="로그인">
@@ -53,5 +58,6 @@
 	</div>
 	<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
 	<script src="js/bootstrap.js"></script>
+	<script src="js/style.js"></script>
 </body>
 </html>
